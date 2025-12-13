@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuzzRewards - Secure Login</title>
+    <style>
+        /* --- Colour Scheme Variables --- */
+        :root {
+            --color-bg-main: #000000;          /* Primary: Black */
+            --color-bg-card: #141414;          /* Deep Charcoal/Dark Grey (Mid-range) */
+            --color-accent-button: #FF7A00;    /* Bright Orange */
+            --color-accent-highlight: #FFA500; /* Bright Orange (Slightly lighter for hover) */
+            --color-heading: #FFC300;          /* Golden Yellow */
+            --color-text-body: #FFFFFF;        /* Secondary: White */
+            --color-text-subtle: #D0D0D0;      /* Light Grey */
+            --color-text-link: #FFD54F;        /* Golden Yellow (Lighter for link) */
+            --color-border: #333333;           /* Custom dark border for inputs */
+        }
+
+        /* --- Global Styles & Layout (High Contrast Dark Theme) --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-bg-main);
+            color: var(--color-text-body);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Login Card Container --- */
+        .login-card {
+            background-color: var(--color-bg-card);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); 
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        /* --- Logo & Header --- */
+        .logo-container {
+            margin-bottom: 25px;
+        }
+
+        .logo-icon {
+            display: inline-block;
+            font-size: 36px;
+            color: var(--color-accent-button);
+            margin-bottom: 10px;
+            /* Using a common emoji for quick visual: ⚡ */
+        }
+
+        .headline {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--color-heading);
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--color-text-subtle);
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        /* --- Form Elements --- */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            background-color: var(--color-bg-main); 
+            color: var(--color-text-body);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: var(--color-accent-button);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.3); 
+        }
+        
+        /* Placeholder styling */
+        .input-field::placeholder {
+            color: var(--color-text-subtle);
+            opacity: 0.7;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-bg-main); 
+            background-color: var(--color-accent-button);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            margin-top: 10px;
+        }
+
+        .login-button:hover {
+            background-color: var(--color-accent-highlight);
+        }
+
+        .login-button:active {
+            transform: scale(0.99);
+        }
+        
+        /* --- Footer Link --- */
+        .signup-link {
+            display: block;
+            margin-top: 25px;
+            font-size: 14px;
+            color: var(--color-text-subtle);
+        }
+
+        .signup-link a {
+            color: var(--color-text-link);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .signup-link a:hover {
+            color: var(--color-accent-highlight);
+            text-decoration: underline;
+        }
+
+        /* --- Custom Modal Styling (for error alerts) --- */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.8); 
+            padding-top: 150px;
+        }
+
+        .modal-content {
+            background-color: var(--color-bg-card);
+            margin: auto;
+            padding: 30px;
+            border: 1px solid var(--color-accent-button);
+            width: 80%;
+            max-width: 300px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .close-btn {
+            color: var(--color-text-subtle);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: var(--color-accent-highlight);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .modal-message {
+            color: var(--color-text-body);
+            margin: 15px 0;
+            font-size: 16px;
+        }
+        
+        .modal-icon {
+            color: var(--color-accent-button);
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        
+        <div class="logo-container">
+            <div class="logo-icon">⚡</div>
+            <h1 class="headline">Buzz Rewards</h1>
+            <p class="subtitle">Secure Login</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="text" id="accountId" class="input-field" placeholder="Account ID (e.g., BR1001)" required>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" id="password" class="input-field" placeholder="Password" required>
+            </div>
+            
+            <button type="submit" class="login-button">Log In</button>
+        </form>
+
+        <p class="signup-link">
+            Don't have an account? <a href="#">Go to Signup</a>
+        </p>
+
+    </div>
+
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-icon">⚠️</div>
+            <p class="modal-message" id="modalMessage"></p>
+            <button class="login-button" onclick="closeModal()" style="width: auto; padding: 10px 20px;">Try Again</button>
+        </div>
+    </div>
+    
+    <script>
+        // --- Constants for Storage Keys ---
+        const GGG_KEY = "ggg"; // Local Storage key for temporary user data
+        const PRL_KEY = "PRL"; // Session Storage key for login token
+        const JSON_FILE = 'users.json'; // The file to fetch
+
+        /**
+         * Custom Modal Functions
+         */
+        const errorModal = document.getElementById('errorModal');
+        const modalMessage = document.getElementById('modalMessage');
+
+        function showModal(message) {
+            modalMessage.textContent = message;
+            errorModal.style.display = "block";
+        }
+
+        function closeModal() {
+            modalMessage.textContent = ''; // Clear message on close
+            errorModal.style.display = "none";
+        }
+
+        // Close modal listeners
+        document.querySelector('.close-btn').onclick = closeModal;
+        window.onclick = function(event) {
+            if (event.target == errorModal) {
+                closeModal();
+            }
+        }
+        
+        /**
+         * System initialization: Fetches user data and stores it in 'ggg'.
+         */
+        async function initializeData() {
+            console.log(`System: Attempting to fetch data from ${JSON_FILE}...`);
+            try {
+                // NOTE: This fetch requires the file to be served over a local web server.
+                const response = await fetch(JSON_FILE);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}. Ensure ${JSON_FILE} is in the same directory and you are running a local web server.`);
+                }
+
+                const usersData = await response.json();
+                
+                // Store the JSON string in local storage under the key 'ggg'
+                localStorage.setItem(GGG_KEY, JSON.stringify(usersData));
+                console.log(`System: User data loaded and stored in localStorage['${GGG_KEY}'].`);
+                
+            } catch (error) {
+                console.error("Initialization Error:", error.message);
+                showModal(`Failed to load user data: ${error.message}. Please ensure a local web server is running and ${JSON_FILE} exists.`);
+            }
+        }
+
+        /**
+         * Login Logic
+         */
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const accountId = document.getElementById('accountId').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!accountId || !password) {
+                showModal("Please enter both Account ID and Password.");
+                return;
+            }
+
+            try {
+                // 1. Fetch data from 'ggg' local storage
+                const usersJson = localStorage.getItem(GGG_KEY);
+                
+                if (!usersJson) {
+                    showModal("System Error: User database not found. Please try initializing data again.");
+                    console.error(`Error: localStorage['${GGG_KEY}'] is empty.`);
+                    initializeData(); // Attempt to re-initialize
+                    return;
+                }
+
+                const users = JSON.parse(usersJson);
+                
+                // 2. Verify Account ID and Password
+                const user = users.find(u => u.account_id === accountId && u.passcode === password);
+
+                if (user) {
+                    console.log(`Login Success: ${user.full_name} (${user.account_id})`);
+                    
+                    // 3. On successful login: Create session token, delete 'ggg', redirect
+                    
+                    // a. Create session token "PRL"
+                    sessionStorage.setItem(PRL_KEY, user.account_id);
+                    console.log(`Session: Created sessionStorage['${PRL_KEY}'] = ${user.account_id}`);
+                    
+                    // b. Delete "ggg" from local storage
+                    localStorage.removeItem(GGG_KEY);
+                    console.log(`Cleanup: Deleted localStorage['${GGG_KEY}']`);
+                    
+                    // c. Redirect (Simulated)
+                    alert(`Login Successful! Redirecting to dashboard.html for user ${user.account_id}.`);
+                    window.location.href = 'dashboard.html'; 
+                
+                } else {
+                    // 4. On failure: Display custom alert modal
+                    showModal("Login Failed: The Account ID or Password you entered is incorrect.");
+                }
+
+            } catch (error) {
+                console.error("Login Processing Error:", error);
+                showModal("An unexpected error occurred during the login process.");
+            }
+        });
+
+        // Initialize data storage on page load
+        initializeData();
+
+    </script>
+</body>
+</html>

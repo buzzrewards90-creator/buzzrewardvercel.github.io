@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuzzRewards - Earn Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* --- Colour Scheme Variables (Copied from dashboard.html) --- */
+        :root {
+            --color-bg-main: #000000;          /* Primary: Black */
+            --color-bg-section: #0D0D0D;       /* Deep Charcoal/Dark Grey */
+            --color-bg-card: #1A1A1A;          /* Section Backgrounds and Cards */
+            --color-accent-button: #FF7A00;    /* Bright Orange */
+            --color-accent-hover: #FFA500;     /* Bright Orange (Lighter) */
+            --color-heading: #FFC300;          /* Golden Yellow */
+            --color-text-body: #FFFFFF;        /* Secondary: White */
+            --color-text-subtle: #D0D0D0;      /* Light Grey */
+            --color-text-error: #FF3333;       /* Red for errors/alerts */
+        }
+
+        /* --- Global Styles --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-bg-main);
+            color: var(--color-text-body);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Header / Title --- */
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            color: var(--color-heading);
+            font-size: 32px;
+            margin: 0 0 5px 0;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            color: var(--color-text-subtle);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        /* --- Grid Layout for Cards --- */
+        .earning-methods-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (min-width: 768px) {
+            .earning-methods-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* --- Card Styling --- */
+        .method-card {
+            background-color: var(--color-bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-top: 5px solid var(--color-accent-button);
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed var(--color-bg-section);
+            padding-bottom: 15px;
+        }
+
+        .card-header .icon {
+            font-size: 40px;
+            color: var(--color-accent-button);
+            margin-right: 15px;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            color: var(--color-text-body);
+            font-size: 24px;
+        }
+        
+        .card-header img {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+
+        .rate-info {
+            background-color: var(--color-bg-section);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: var(--color-heading);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        /* --- WhatsApp Specific Styles --- */
+        .advert-text-section label {
+            display: block;
+            margin: 15px 0 5px;
+            color: var(--color-text-subtle);
+            font-weight: 500;
+        }
+
+        .text-area-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #advertText {
+            flex-grow: 1;
+            padding: 10px;
+            background-color: var(--color-bg-section);
+            border: 1px solid var(--color-bg-card);
+            color: var(--color-text-body);
+            border-radius: 6px;
+            resize: none;
+            height: 100px;
+        }
+
+        .copy-btn {
+            background-color: var(--color-accent-button);
+            color: var(--color-bg-main);
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            align-self: flex-start;
+            margin-top: 10px;
+            height: 40px;
+            transition: background-color 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background-color: var(--color-accent-hover);
+        }
+
+        /* --- Google Form Link/Button --- */
+        .form-link-container {
+            margin-top: 20px;
+        }
+
+        .google-form-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            background-color: var(--color-heading);
+            color: var(--color-bg-main);
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 700;
+            transition: background-color 0.2s;
+        }
+
+        .google-form-btn:hover {
+            background-color: var(--color-accent-button);
+        }
+
+        /* --- Back Button --- */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+            text-decoration: none;
+            color: var(--color-text-subtle);
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--color-accent-hover);
+        }
+        
+        .note {
+            font-size: 12px;
+            color: var(--color-text-error);
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header class="page-header">
+            <h1><i class="fas fa-coins"></i> The BuzzRewards Earn Center</h1>
+            <p>Choose a method to start earning immediately and maximize your daily income.</p>
+        </header>
+
+        <section class="earning-methods-grid">
+            
+            <div class="method-card whatsapp-card">
+                <div class="card-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Icon">
+                    <h2>Earn with WhatsApp Status</h2>
+                </div>
+                
+                <div class="rate-info">
+                    <i class="fas fa-eye"></i> You earn: ₦0.83 per view.
+                </div>
+                
+                <div class="advert-text-section">
+                    <label for="advertText">1. Copy this daily advertisement text:</label>
+                    <div class="text-area-container">
+                        <textarea id="advertText" readonly>👋 Join the Buzz and start earning daily! Get paid just for sharing your opinion. Sign up here: </textarea>
+                        <button class="copy-btn" id="copyTextBtn"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                    <p class="note"></p>
+                </div>
+
+                <div class="form-link-container">
+                    <label>2. Upload your daily status view evidence (Video required):</label>
+                    <a href="https://forms.gle/Mj12kr6qQVtSPEfi7" target="_blank" class="google-form-btn">
+                        <i class="fas fa-upload"></i> Upload Daily Status Evidence
+                    </a>
+                    <p class="note">Verification requires a **video** proof of your status views.</p>
+                </div>
+            </div>
+
+            <div class="method-card ppi-card">
+                <div class="card-header">
+                    <div class="icon"><i class="fas fa-mouse-pointer"></i></div>
+                    <h2>Earn with Pay Per Impression (PPI)</h2>
+                </div>
+
+                <div class="rate-info">
+                    <i class="fas fa-dollar-sign"></i> You earn: ₦30.00 per successful impression.
+                </div>
+                
+                <p style="color: var(--color-text-subtle); margin-top: 0;">
+                    Register below to receive a unique submission link via email. Share this link, and earn ₦30 for every valid user who interacts with the content.
+                </p>
+
+                <div class="form-link-container">
+                    <label>1. Register to receive your unique PPI link:</label>
+                    <iframe src="https://forms.gle/mK2rj4G4muFoUgt57" width="100%" height="300" frameborder="0" marginheight="0" marginwidth="0">Loading Registration Form...</iframe>
+                </div>
+                
+                <p class="note" style="text-align: center;">You must enter your account email in the form above to receive your PPI link.</p>
+            </div>
+
+        </section>
+
+        <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+    </div>
+
+    <script>
+        /**
+         * Copy Text Handler for WhatsApp Advert
+         */
+        document.getElementById('copyTextBtn').addEventListener('click', async () => {
+            const advertText = document.getElementById('advertText');
+            
+            // Select the text in the textarea
+            advertText.select();
+            advertText.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+                // Use modern Clipboard API if available
+                await navigator.clipboard.writeText(advertText.value);
+                
+                const copyBtn = document.getElementById('copyTextBtn');
+                const originalText = copyBtn.innerHTML;
+                
+                // Provide visual feedback
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                copyBtn.style.backgroundColor = 'var(--color-heading)';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.style.backgroundColor = 'var(--color-accent-button)';
+                }, 2000); 
+                
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy text automatically. Please copy the text manually.');
+            }
+        });
+    </script>
+</body>
+</html>

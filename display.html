@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRL Token Session Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        #sessionDisplay {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #e9ecef;
+            font-size: 1.1em;
+            word-break: break-all;
+        }
+        .key-label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+        #deleteButton {
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        #deleteButton:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🔒 PRL TOKEN Session Management</h2>
+
+    <div id="sessionDisplay">
+        <span class="key-label">PRL TOKEN Value:</span>
+        <span id="prlValue"></span>
+    </div>
+
+    <button id="deleteButton">🗑️ Delete PRL TOKEN</button>
+</div>
+
+<script>
+    const prlValueElement = document.getElementById('prlValue');
+    const deleteButton = document.getElementById('deleteButton');
+    
+    /**
+     * Fetches the PRL TOKEN value from Local Storage and updates the display.
+     */
+    function displayPRL() {
+        // 1. Get local storage session named "PRL_TOKEN"
+        const prl = localStorage.getItem('PRL_TOKEN');
+
+        // 2. Display it
+        if (prl) {
+            prlValueElement.textContent = prl;
+            deleteButton.disabled = false;
+        } else {
+            prlValueElement.textContent = 'No active PRL TOKEN found.';
+            deleteButton.disabled = true; 
+        }
+    }
+
+    /**
+     * Deletes the PRL TOKEN from Local Storage and updates the page.
+     */
+    function deletePRL() {
+        if (localStorage.getItem('PRL_TOKEN')) {
+            localStorage.removeItem('PRL_TOKEN'); 
+            alert('PRL TOKEN successfully deleted!');
+        } else {
+            alert('Error: No PRL TOKEN found.');
+        }
+        displayPRL();
+    }
+
+    deleteButton.addEventListener('click', deletePRL);
+
+    // Load current PRL token on page load
+    displayPRL();
+</script>
+
+</body>
+</html>

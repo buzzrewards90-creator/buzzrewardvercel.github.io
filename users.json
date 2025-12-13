@@ -1,0 +1,35 @@
+[
+  {
+    "full_name": "James Okafor",
+    "account_id": "BR1001",
+    "passcode": "pass1234",
+    "balance": 7500,
+    "activated": true,
+    "referrals": 5
+  },
+  {
+    "full_name": "Chiamaka Ude",
+    "account_id": "BR1002",
+    "passcode": "secure5678",
+    "balance": 12000,
+    "activated": true,
+    "referrals": 2
+  },
+    {
+    "full_name": "Emmanuel O",
+    "account_id": "BR1004",
+    "passcode": "Rejudo123",
+    "balance": 2500,
+    "activated": true,
+    "referrals": 2
+  },
+
+  {
+    "full_name": "Adeyemi Johnson",
+    "account_id": "BR1003",
+    "passcode": "code9999",
+    "balance": 3400,
+    "activated": true,
+    "referrals": 8
+  }
+]

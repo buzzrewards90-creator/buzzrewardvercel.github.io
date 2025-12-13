@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuzzRewards - Account Activation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* --- Colour Scheme Variables (Copied from dashboard.html) --- */
+        :root {
+            --color-bg-main: #000000;          /* Primary: Black */
+            --color-bg-section: #0D0D0D;       /* Deep Charcoal/Dark Grey */
+            --color-bg-card: #1A1A1A;          /* Section Backgrounds and Cards */
+            --color-accent-button: #FF7A00;    /* Bright Orange */
+            --color-accent-hover: #FFA500;     /* Bright Orange (Lighter) */
+            --color-heading: #FFC300;          /* Golden Yellow */
+            --color-text-body: #FFFFFF;        /* Secondary: White */
+            --color-text-subtle: #D0D0D0;      /* Light Grey */
+            --color-text-error: #FF3333;       /* Red for errors/alerts */
+            --color-success: #33FF33;          /* Green for success */
+        }
+
+        /* --- Global Styles --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-bg-main);
+            color: var(--color-text-body);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Header / Title --- */
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            color: var(--color-heading);
+            font-size: 32px;
+            margin: 0 0 5px 0;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            color: var(--color-text-subtle);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        /* --- Activation Card --- */
+        .activation-card {
+            background-color: var(--color-bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 3px solid var(--color-success);
+        }
+
+        .activation-card h2 {
+            color: var(--color-success);
+            margin-top: 0;
+            font-size: 26px;
+        }
+
+        /* --- Payment Amount Box --- */
+        .amount-box {
+            background-color: var(--color-bg-section);
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin: 20px auto;
+            max-width: 300px;
+            border-left: 5px solid var(--color-accent-button);
+        }
+
+        .amount-box .label {
+            font-size: 14px;
+            color: var(--color-text-subtle);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .amount-box .value {
+            color: var(--color-accent-hover);
+            font-size: 36px;
+            font-weight: 700;
+        }
+        
+        /* --- Bank Details Grid --- */
+        .bank-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: left;
+            margin-top: 30px;
+        }
+        
+        .bank-details-grid .detail-box {
+            background-color: var(--color-bg-section);
+            padding: 15px;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .bank-details-grid .label {
+            font-size: 12px;
+            color: var(--color-text-subtle);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .bank-details-grid .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-text-body);
+        }
+
+        .bank-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .bank-logo img {
+            width: 120px; 
+            height: auto;
+            border-radius: 5px;
+            vertical-align: middle;
+        }
+
+        /* --- Submission Form Section --- */
+        .submission-section {
+            background-color: var(--color-bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        
+        .submission-section p {
+            font-size: 16px;
+            color: var(--color-text-subtle);
+            margin-bottom: 20px;
+        }
+
+        .google-form-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            background-color: var(--color-accent-button);
+            color: var(--color-bg-main);
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 700;
+            transition: background-color 0.2s;
+        }
+
+        .google-form-btn:hover {
+            background-color: var(--color-accent-hover);
+        }
+
+        /* --- Back Button --- */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+            text-decoration: none;
+            color: var(--color-text-subtle);
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--color-accent-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header class="page-header">
+            <h1><i class="fas fa-user-check"></i> Account Activation</h1>
+            <p>Activate your account to unlock all earning and withdrawal features.</p>
+        </header>
+
+        <section class="activation-card">
+            <h2>STEP 1: Make Payment</h2>
+            
+            <div class="amount-box">
+                <span class="label">Activation Fee</span>
+                <span class="value">₦2,000.00</span>
+            </div>
+
+            <div class="bank-logo">
+                <img src="8264c00bca816ae233d48988df220b83.jpg" alt="OPay Logo">
+            </div>
+
+            <div class="bank-details-grid">
+                <div class="detail-box">
+                    <span class="label">Bank Name:</span>
+                    <span class="value">OPay</span>
+                </div>
+                <div class="detail-box">
+                    <span class="label">Account Number:</span>
+                    <span class="value" id="accountNumber">610 145 9859</span>
+                </div>
+                <div class="detail-box" style="grid-column: 1 / 3;">
+                    <span class="label">Account Name (Crucial for Verification):</span>
+                    <span class="value">Emmanuel Onyedikachukwu James</span>
+                </div>
+            </div>
+            
+            <p style="color: var(--color-text-error); margin-top: 25px; font-weight: 600;">
+                <i class="fas fa-exclamation-circle"></i> WARNING: Ensure the Account Name is exactly "Emmanuel Onyedikachukwu James" before sending funds.
+            </p>
+        </section>
+
+        <section class="submission-section">
+            <h2>STEP 2: Submit Proof of Payment</h2>
+            <p>
+                After making the ₦2,000 transfer, click the button below and fill out the form with your Account ID and a screenshot of your transaction proof. Your account will be activated within 30 minutes.
+            </p>
+
+            <a href="https://forms.gle/h4LeeRdhVD1DeG3r5" target="_blank" class="google-form-btn">
+                <i class="fas fa-file-invoice"></i> Submit Payment Proof
+            </a>
+        </section>
+
+        <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+    </div>
+
+    <script>
+        /**
+         * Copy Account Number to Clipboard Handler
+         */
+        const accountNumber = document.getElementById('accountNumber');
+        accountNumber.style.cursor = 'pointer';
+        accountNumber.title = 'Click to copy';
+
+        accountNumber.addEventListener('click', async () => {
+            const textToCopy = accountNumber.textContent;
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                
+                // Temporary visual feedback
+                const originalColor = accountNumber.style.color;
+                accountNumber.style.color = 'var(--color-success)';
+                accountNumber.textContent = '610 145 9859 (Copied!)';
+
+                setTimeout(() => {
+                    accountNumber.style.color = originalColor;
+                    accountNumber.textContent = textToCopy;
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy. Please manually copy the account number: ' + textToCopy);
+            }
+        });
+
+    </script>
+</body>
+</html>

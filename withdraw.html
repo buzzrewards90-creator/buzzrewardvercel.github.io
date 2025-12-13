@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuzzRewards - Withdraw</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* --- Colour Scheme Variables (Copied from dashboard.html) --- */
+        :root {
+            --color-bg-main: #000000;          /* Primary: Black */
+            --color-bg-section: #0D0D0D;       /* Deep Charcoal/Dark Grey */
+            --color-bg-card: #1A1A1A;          /* Section Backgrounds and Cards */
+            --color-accent-button: #FF7A00;    /* Bright Orange */
+            --color-accent-hover: #FFA500;     /* Bright Orange (Lighter) */
+            --color-heading: #FFC300;          /* Golden Yellow */
+            --color-text-body: #FFFFFF;        /* Secondary: White */
+            --color-text-subtle: #D0D0D0;      /* Light Grey */
+            --color-text-error: #FF3333;       /* Red for errors/alerts */
+            --color-success: #33FF33;          /* Green for success */
+        }
+
+        /* --- Global Styles --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-bg-main);
+            color: var(--color-text-body);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Header / Title --- */
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            color: var(--color-heading);
+            font-size: 32px;
+            margin: 0 0 5px 0;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            color: var(--color-text-subtle);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        /* --- Info Card --- */
+        .info-card {
+            background-color: var(--color-bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .balance-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--color-bg-section);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .balance-display .label {
+            font-size: 16px;
+            color: var(--color-text-subtle);
+        }
+
+        .balance-display .value {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--color-accent-hover);
+        }
+
+        .rules-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .rules-list li {
+            margin-bottom: 8px;
+            color: var(--color-text-subtle);
+        }
+
+        .rules-list li i {
+            color: var(--color-success);
+            margin-right: 8px;
+        }
+
+        .rules-list li.alert i {
+            color: var(--color-text-error);
+        }
+
+        /* --- Withdrawal Form Section --- */
+        .withdrawal-form-section {
+            padding: 25px;
+            background-color: var(--color-bg-card);
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .form-message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .form-message.active-time {
+            background-color: rgba(51, 255, 51, 0.1);
+            color: var(--color-success);
+            border: 1px solid var(--color-success);
+        }
+
+        .form-message.inactive-time {
+            background-color: rgba(255, 51, 51, 0.1);
+            color: var(--color-text-error);
+            border: 1px solid var(--color-text-error);
+        }
+
+        .form-link-container {
+            margin-top: 20px;
+        }
+        
+        /* Google Form Submission Button/Link */
+        #withdrawFormLink {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            background-color: var(--color-accent-button);
+            color: var(--color-bg-main);
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 700;
+            transition: background-color 0.2s;
+            pointer-events: auto; /* Active state */
+        }
+
+        #withdrawFormLink:hover {
+            background-color: var(--color-accent-hover);
+        }
+        
+        #withdrawFormLink.disabled {
+            background-color: var(--color-bg-section);
+            color: var(--color-text-subtle);
+            cursor: not-allowed;
+            pointer-events: none; /* Disables clicks */
+        }
+
+        /* --- Back Button --- */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+            text-decoration: none;
+            color: var(--color-text-subtle);
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--color-accent-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header class="page-header">
+            <h1><i class="fas fa-hand-holding-usd"></i> Request Withdrawal</h1>
+            <p>Submit your payment request during the official payout window.</p>
+        </header>
+
+        <section class="info-card">
+            <div class="balance-display">
+                <span class="label">Your Current Buzz Balance:</span>
+                <span class="value" id="userBalance">N0.00</span>
+            </div>
+            
+            <h3><i class="fas fa-exclamation-triangle" style="color: var(--color-accent-button);"></i> Withdrawal Rules</h3>
+            <ul class="rules-list">
+                <li id="rule-min-balance"><i class="fas fa-check-circle"></i> Minimum Withdrawal: ₦500.00</li>
+                <li><i class="fas fa-check-circle"></i> Payout Days: Thursday and Friday</li>
+                <li><i class="fas fa-clock"></i> Payout Time: 5:00 AM to 3:00 PM (WAT/GMT+1)</li>
+                <li><i class="fas fa-info-circle"></i> Withdrawal is processed via Google Form submission.</li>
+            </ul>
+        </section>
+
+        <section class="withdrawal-form-section">
+            <h2>Withdrawal Status</h2>
+            <div id="statusMessage" class="form-message inactive-time">
+                Checking eligibility...
+            </div>
+            
+            <div class="form-link-container">
+                <a href="https://forms.gle/QjGQSbDsNZzWTx1F7" target="_blank" id="withdrawFormLink" class="google-form-btn disabled">
+                    <i class="fas fa-ban"></i> Access Withdrawal Form
+                </a>
+                <p id="balanceWarning" class="note" style="display:none; color:var(--color-text-error); margin-top:10px;">
+                    Your current balance is below the ₦500 minimum requirement.
+                </p>
+            </div>
+        </section>
+
+        <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+    </div>
+
+    <script>
+        // --- Constants ---
+        const PRL_KEY = "PRL"; 
+        const JSON_FILE = 'users.json';
+        const MIN_WITHDRAWAL = 500.00;
+        const Naira_Symbol = '₦'; 
+
+        /**
+         * Function to format a number as currency
+         */
+        function formatCurrency(amount) {
+            return `${Naira_Symbol}${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+        }
+
+        /**
+         * Checks if the current time falls within the allowed withdrawal window.
+         * Thursday (4) and Friday (5) from 5:00 AM to 3:00 PM (15:00).
+         */
+        function checkWithdrawalWindow() {
+            const now = new Date();
+            const day = now.getDay(); // 0 (Sunday) to 6 (Saturday)
+            const hour = now.getHours(); 
+            const minute = now.getMinutes(); 
+            
+            // Withdrawal days: Thursday (4) or Friday (5)
+            const isWithdrawalDay = (day === 4 || day === 5);
+            
+            // Withdrawal time: 5:00 AM (5) to 3:00 PM (15)
+            const startHour = 5;
+            const endHour = 15; // 3 PM
+
+            const isWithdrawalTime = (hour >= startHour && hour < endHour);
+            
+            return isWithdrawalDay && isWithdrawalTime;
+        }
+
+        /**
+         * 1. Data Fetch, Balance Check, and Status Update
+         */
+        async function initWithdrawalPage() {
+            const accountId = sessionStorage.getItem(PRL_KEY);
+            const balanceElement = document.getElementById('userBalance');
+            const statusMessage = document.getElementById('statusMessage');
+            const withdrawLink = document.getElementById('withdrawFormLink');
+            const balanceWarning = document.getElementById('balanceWarning');
+            let userBalance = 0;
+
+            // --- Authentication Guard ---
+            if (!accountId) {
+                alert("Session Expired. Redirecting to Login.");
+                window.location.href = 'login.html'; 
+                return;
+            }
+
+            // --- Data Fetch (To get current balance) ---
+            try {
+                const response = await fetch(JSON_FILE);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data.');
+                }
+                const usersData = await response.json();
+                const currentUser = usersData.find(u => u.account_id === accountId);
+
+                if (currentUser) {
+                    userBalance = currentUser.balance || 0;
+                    balanceElement.textContent = formatCurrency(userBalance);
+                } else {
+                    alert("User data not found.");
+                }
+            } catch (error) {
+                console.error("Withdrawal Initialization Error:", error);
+                alert(`Error loading data. ${error.message}`);
+                // Proceed with 0 balance if fetch fails
+            }
+
+            // --- Check Eligibility ---
+            const withinWindow = checkWithdrawalWindow();
+            const meetsMinimum = userBalance >= MIN_WITHDRAWAL;
+            
+            let statusText = "";
+            let canWithdraw = false;
+
+            if (!meetsMinimum) {
+                statusText = `Balance Too Low: Minimum withdrawal is ${formatCurrency(MIN_WITHDRAWAL)}.`;
+                statusMessage.className = 'form-message inactive-time';
+                balanceWarning.style.display = 'block';
+
+            } else if (withinWindow) {
+                statusText = "Withdrawal Window OPEN! Click below to submit your request.";
+                statusMessage.className = 'form-message active-time';
+                withdrawLink.classList.remove('disabled');
+                withdrawLink.innerHTML = '<i class="fas fa-check-circle"></i> Access Withdrawal Form';
+                canWithdraw = true;
+            } else {
+                // Determine next opening time for display
+                const nextOpenTime = "Thursday at 5:00 AM"; 
+                statusText = `Window CLOSED. Payout is only available Thursday - Friday, 5:00 AM - 3:00 PM. Next opening: ${nextOpenTime}.`;
+                statusMessage.className = 'form-message inactive-time';
+            }
+            
+            statusMessage.textContent = statusText;
+        }
+
+        // Initialize the page on load
+        initWithdrawalPage();
+    </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuzzRewards - Referral Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* --- Colour Scheme Variables (Copied from dashboard.html) --- */
+        :root {
+            --color-bg-main: #000000;          /* Primary: Black */
+            --color-bg-section: #0D0D0D;       /* Deep Charcoal/Dark Grey */
+            --color-bg-card: #1A1A1A;          /* Section Backgrounds and Cards */
+            --color-accent-button: #FF7A00;    /* Bright Orange */
+            --color-accent-hover: #FFA500;     /* Bright Orange (Lighter) */
+            --color-heading: #FFC300;          /* Golden Yellow */
+            --color-text-body: #FFFFFF;        /* Secondary: White */
+            --color-text-subtle: #D0D0D0;      /* Light Grey */
+            --color-text-error: #FF3333;       /* Red for errors/alerts */
+        }
+
+        /* --- Global Styles --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-bg-main);
+            color: var(--color-text-body);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* --- Header / Title --- */
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            color: var(--color-heading);
+            font-size: 32px;
+            margin: 0 0 5px 0;
+            font-weight: 700;
+        }
+
+        .page-header p {
+            color: var(--color-text-subtle);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        /* --- Referral Code Display --- */
+        .code-box {
+            background-color: var(--color-bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 1px solid var(--color-accent-button);
+        }
+
+        .code-box .label {
+            font-size: 18px;
+            color: var(--color-text-subtle);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .code-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .code-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--color-accent-hover);
+            padding: 10px 20px;
+            background-color: var(--color-bg-section);
+            border-radius: 6px;
+            border: 2px dashed var(--color-accent-button);
+        }
+
+        .copy-btn {
+            background-color: var(--color-accent-button);
+            color: var(--color-bg-main);
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--color-accent-hover);
+        }
+
+        /* --- Stats Card --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background-color: var(--color-bg-card);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card .icon {
+            font-size: 30px;
+            color: var(--color-accent-button);
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 30px;
+            font-weight: 600;
+            color: var(--color-heading);
+            margin: 5px 0;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: var(--color-text-subtle);
+        }
+
+        /* --- Go Back Button --- */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+            text-decoration: none;
+            color: var(--color-text-subtle);
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--color-accent-hover);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header class="page-header">
+            <h1><i class="fas fa-users"></i> Referral Center</h1>
+            <p>Share your code and earn ${Naira_Symbol}250 for every successful activation!</p>
+        </header>
+
+        <section class="code-box">
+            <span class="label">Your Personal Referral Code:</span>
+            <div class="code-display">
+                <div class="code-value" id="referralCode">Loading...</div>
+                <button class="copy-btn" id="copyBtn"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-user-check"></i></div>
+                <div class="value" id="totalReferrals">0</div>
+                <div class="label">Total Referrals</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
+                <div class="value" id="totalBonus">N0.00</div>
+                <div class="label">Total Referral Bonus</div>
+            </div>
+        </section>
+
+        <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+
+    </div>
+
+    <script>
+        // --- Constants ---
+        const PRL_KEY = "PRL"; // Session Storage key for login token (Account ID)
+        const JSON_FILE = 'users.json';
+        const BONUS_PER_REFERRAL = 250;
+        const Naira_Symbol = '₦'; // Assuming Nigerian Naira symbol
+
+        /**
+         * Function to format a number as currency
+         */
+        function formatCurrency(amount) {
+            return `${Naira_Symbol}${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+        }
+        
+        /**
+         * 1. Data Fetch and Display
+         */
+        async function loadReferralData() {
+            const accountId = sessionStorage.getItem(PRL_KEY);
+            const referralCodeElement = document.getElementById('referralCode');
+            const totalReferralsElement = document.getElementById('totalReferrals');
+            const totalBonusElement = document.getElementById('totalBonus');
+
+            // --- Authentication Guard ---
+            if (!accountId) {
+                alert("Session Expired or Invalid. Redirecting to Login.");
+                window.location.href = 'login.html'; 
+                return;
+            }
+            
+            // Set the referral code immediately (it is the Account ID)
+            referralCodeElement.textContent = accountId;
+
+            // --- Data Fetch ---
+            try {
+                const response = await fetch(JSON_FILE);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data from server. (Check users.json)');
+                }
+                
+                const usersData = await response.json();
+                
+                // Find current user
+                const currentUser = usersData.find(u => u.account_id === accountId);
+
+                if (currentUser) {
+                    const referrals = currentUser.referrals || 0;
+                    const bonus = referrals * BONUS_PER_REFERRAL;
+                    
+                    // Display Data
+                    totalReferralsElement.textContent = referrals;
+                    totalBonusElement.textContent = formatCurrency(bonus);
+                    
+                } else {
+                    alert("Error: User data not found. Please log in again.");
+                    window.location.href = 'login.html';
+                }
+
+            } catch (error) {
+                console.error("Referral Center Initialization Error:", error);
+                alert(`Critical Error: Could not load user data. ${error.message}`);
+                // Fallback to dashboard or login
+                window.location.href = 'dashboard.html'; 
+            }
+        }
+        
+        /**
+         * 2. Copy to Clipboard Handler
+         */
+        document.getElementById('copyBtn').addEventListener('click', async () => {
+            const code = document.getElementById('referralCode').textContent;
+            
+            try {
+                await navigator.clipboard.writeText(code);
+                const copyBtn = document.getElementById('copyBtn');
+                
+                // Provide visual feedback
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                copyBtn.disabled = true;
+
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.disabled = false;
+                }, 2000); 
+                
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy. Please manually select and copy the code: ' + code);
+            }
+        });
+
+
+        // Initialize the page on load
+        loadReferralData();
+    </script>
+</body>
+</html>
