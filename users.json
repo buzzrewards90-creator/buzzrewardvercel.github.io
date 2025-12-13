@@ -25,10 +25,10 @@
   },
 
   {
-    "full_name": "Adeyemi Johnson",
+    "full_name": "Solomon",
     "account_id": "BR1003",
-    "passcode": "code9999",
-    "balance": 3400,
+    "passcode": "solomon",
+    "balance": 3200,
     "activated": true,
     "referrals": 8
   }
