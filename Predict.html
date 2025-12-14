@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crash Game Predictor (Simulation) with SMA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <style>
+        /* --- CSS STYLES --- */
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 30px;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 700px;
+        }
+
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #00BCD4;
+            margin-top: 20px;
+        }
+
+        .disclaimer {
+            color: #FF9800;
+            padding: 10px;
+            border: 1px solid #FF9800;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .input-section label {
+            font-weight: bold;
+            flex-grow: 1;
+        }
+
+        #multiplierInput {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 10px;
+            border-radius: 5px;
+            width: 150px;
+        }
+
+        #addMultiplierBtn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #addMultiplierBtn:hover {
+            background-color: #45a049;
+        }
+
+        /* Chart Styling */
+        #chartContainer {
+            margin-top: 20px;
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        /* History & Analysis Grid */
+        .data-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        #historyList {
+            list-style: none;
+            padding: 0;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #333;
+        }
+
+        #historyList li {
+            padding: 5px 0;
+            border-bottom: 1px dashed #3a3a3a;
+            font-size: 0.9em;
+        }
+
+        #historyList li:last-child {
+            border-bottom: none;
+        }
+
+        .analysis-section p {
+            padding: 5px 0;
+            border-bottom: 1px dashed #3a3a3a;
+        }
+        
+        .analysis-section strong {
+            color: #00BCD4;
+        }
+
+        .prediction-section {
+            margin-top: 25px;
+            text-align: center;
+            border-top: 2px solid #333;
+            padding-top: 20px;
+        }
+
+        #predictionOutput {
+            font-size: 1.2em;
+            padding: 15px;
+            background-color: #333;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        #resetBtn {
+            background-color: #F44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #resetBtn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Crash Analyzer & Predictor Simulation</h1>
+        <p class="disclaimer">
+            <strong>DISCLAIMER:</strong> This tool performs statistical analysis on your input data only. Data is saved in your browser's Local Storage.
+        </p>
+        
+        <div class="input-section">
+            <label for="multiplierInput">Enter Multiplier:</label>
+            <input type="number" id="multiplierInput" step="0.01" min="1.00" placeholder="e.g., 1.45">
+            <button id="addMultiplierBtn">Add Result</button>
+        </div>
+
+        <div id="chartContainer">
+            <h2>Multiplier History Chart</h2>
+            <canvas id="multiplierChart"></canvas>
+        </div>
+
+        <div class="data-layout">
+            <div class="data-history-section">
+                <h2>Recent History</h2>
+                <ul id="historyList"></ul>
+            </div>
+            <div class="analysis-section">
+                <h2>Analysis</h2>
+                <p><strong>Rounds Recorded:</strong> <span id="roundsCount">0</span></p>
+                <p><strong>Average Multiplier:</strong> <span id="averageMultiplier">N/A</span></p>
+                <p><strong>Low Crashes (&lt; 2.00x):</strong> <span id="lowFrequency">N/A</span></p>
+            </div>
+        </div>
+
+        <div class="prediction-section">
+            <h2>Simulated Prediction</h2>
+            <div id="predictionOutput">
+                Data will load from Local Storage or be ready for new input.
+            </div>
+            <button id="resetBtn">Clear All Data</button>
+        </div>
+    </div>
+
+    <script>
+        /* --- JAVASCRIPT LOGIC --- */
+        let multipliers = [];
+        let chart;
+        const SMA_PERIOD = 10; // Simple Moving Average Period
+
+        const STORAGE_KEY = 'crashGameMultipliers';
+
+        const inputEl = document.getElementById('multiplierInput');
+        const addBtn = document.getElementById('addMultiplierBtn');
+        const historyList = document.getElementById('historyList');
+        const roundsCountEl = document.getElementById('roundsCount');
+        const averageMultiplierEl = document.getElementById('averageMultiplier');
+        const lowFrequencyEl = document.getElementById('lowFrequency');
+        const predictionOutput = document.getElementById('predictionOutput');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // --- Calculation Function ---
+        function calculateMovingAverage(data, period) {
+            const sma = [];
+            for (let i = 0; i < data.length; i++) {
+                if (i < period - 1) {
+                    sma.push(null); // Not enough data for the first (period - 1) points
+                } else {
+                    // Calculate the sum of the last 'period' values
+                    const slice = data.slice(i - period + 1, i + 1);
+                    const sum = slice.reduce((a, b) => a + b, 0);
+                    sma.push(sum / period);
+                }
+            }
+            return sma;
+        }
+
+        // --- Local Storage Functions ---
+        function loadData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                try {
+                    multipliers = JSON.parse(data).map(m => parseFloat(m)); 
+                } catch (e) {
+                    console.error("Error loading data from local storage:", e);
+                    multipliers = [];
+                }
+            }
+            updateDisplay();
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(multipliers));
+        }
+
+        // --- Chart Functions ---
+        function initializeChart() {
+            const ctx = document.getElementById('multiplierChart').getContext('2d');
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: multipliers.map((_, i) => `${i + 1}`),
+                    datasets: [
+                        {
+                            label: 'Multiplier Value',
+                            data: multipliers,
+                            borderColor: '#4CAF50', // Green for raw data
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            tension: 0.3, // Smoother line
+                            fill: false
+                        },
+                        {
+                            label: `${SMA_PERIOD}-Round SMA`,
+                            data: calculateMovingAverage(multipliers, SMA_PERIOD),
+                            borderColor: '#00BCD4', // Cyan for moving average
+                            borderWidth: 2,
+                            pointRadius: 0, // No points for SMA
+                            tension: 0.3,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Multiplier (X)',
+                                color: '#e0e0e0'
+                            },
+                            ticks: { color: '#e0e0e0' },
+                            grid: { color: '#333' }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Round Number',
+                                color: '#e0e0e0'
+                            },
+                            ticks: { 
+                                color: '#e0e0e0',
+                                autoSkip: true,
+                                maxTicksLimit: 10
+                            },
+                            grid: { color: '#333' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0e0e0'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toFixed(2) + 'x';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            if (!chart) {
+                initializeChart();
+                return;
+            }
+            
+            // Update data and labels
+            chart.data.labels = multipliers.map((_, i) => `${i + 1}`);
+            chart.data.datasets[0].data = multipliers;
+            chart.data.datasets[1].data = calculateMovingAverage(multipliers, SMA_PERIOD);
+
+            // Re-draw the chart
+            chart.update();
+        }
+
+        // --- Display & Analysis Functions ---
+        function updateDisplay() {
+            const count = multipliers.length;
+            roundsCountEl.textContent = count;
+            
+            if (count === 0) {
+                averageMultiplierEl.textContent = 'N/A';
+                lowFrequencyEl.textContent = 'N/A';
+                predictionOutput.innerHTML = 'Enter some results to get a simulated prediction.';
+                historyList.innerHTML = '';
+                updateChart();
+                return;
+            }
+
+            // 1. Calculate Average
+            const sum = multipliers.reduce((acc, val) => acc + val, 0);
+            const average = sum / count;
+            averageMultiplierEl.textContent = average.toFixed(2) + 'x';
+
+            // 2. Calculate Low Crash Frequency (crashes below 2.00x)
+            const lowCrashes = multipliers.filter(m => m < 2.00).length;
+            const lowFrequency = (lowCrashes / count) * 100;
+            lowFrequencyEl.textContent = `${lowFrequency.toFixed(1)}% (${lowCrashes}/${count})`;
+
+            // 3. Update History List (LIFO - Last In, First Out)
+            historyList.innerHTML = '';
+            const recentMultipliers = multipliers.slice(-10).reverse(); // Last 10
+
+            recentMultipliers.forEach((m, index) => {
+                // Since we reversed the slice, the index we want is count - (index + 1)
+                const originalIndex = count - 1 - index; 
+                
+                const li = document.createElement('li');
+                
+                // Color coding
+                let color = '#4CAF50'; 
+                if (m < 2.00) color = '#F44336'; 
+                else if (m >= 10.00) color = '#FF9800'; 
+                else if (m >= 3.00) color = '#00BCD4'; 
+
+                li.innerHTML = `<span style="color: ${color};">Round ${originalIndex + 1}: ${m.toFixed(2)}x</span>`;
+                historyList.appendChild(li);
+            });
+            
+            // 4. Update Simulated Prediction
+            let suggestedTarget;
+            const lastSMA = calculateMovingAverage(multipliers, SMA_PERIOD).slice(-1)[0];
+
+            if (lowFrequency > 70) {
+                suggestedTarget = 1.50;
+                predictionOutput.innerHTML = `⚠️ High risk detected (${lowFrequency.toFixed(0)}% low crashes). A very conservative target is <strong>${suggestedTarget.toFixed(2)}x</strong>.`;
+            } else if (lastSMA && lastSMA > 3.00 && lowFrequency < 50) {
+                suggestedTarget = 2.50;
+                predictionOutput.innerHTML = `🟢 SMA is high (${lastSMA.toFixed(2)}x). A balanced target is <strong>${suggestedTarget.toFixed(2)}x</strong>.`;
+            } else {
+                suggestedTarget = 2.00;
+                predictionOutput.innerHTML = `Based on your data, a conservative target is <strong>${suggestedTarget.toFixed(2)}x</strong>.`;
+            }
+
+            // 5. Update the chart
+            updateChart();
+        }
+
+        // --- Core Action Functions ---
+        function addMultiplier() {
+            const value = parseFloat(inputEl.value);
+
+            if (isNaN(value) || value < 1.00) {
+                alert('Please enter a valid multiplier (1.00 or higher).');
+                return;
+            }
+
+            multipliers.push(value);
+            inputEl.value = '';
+            inputEl.focus();
+            saveData();
+            updateDisplay();
+        }
+
+        function resetData() {
+            if (confirm("Are you sure you want to clear ALL recorded data? This action cannot be undone.")) {
+                multipliers = [];
+                localStorage.removeItem(STORAGE_KEY);
+                updateDisplay();
+            }
+        }
+
+        // --- Event Listeners and Initialization ---
+        addBtn.addEventListener('click', addMultiplier);
+        inputEl.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addMultiplier();
+            }
+        });
+        resetBtn.addEventListener('click', resetData);
+
+        // Load data on page load
+        window.onload = loadData;
+        
+    </script>
+</body>
+</html>
