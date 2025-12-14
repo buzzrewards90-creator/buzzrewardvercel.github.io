@@ -23,6 +23,16 @@
     "activated": true,
     "referrals": 2
   },
+  [
+  {
+    "full_name": "Adekoya Daniel",
+    "account_id": "08100591963",
+    "passcode": "ade1963",
+    "balance": 0,
+    "activated": false,
+    "referrals": 0
+  }
+  ]
 
   {
     "full_name": "Solomon",
