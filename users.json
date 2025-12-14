@@ -41,5 +41,15 @@
     "balance": 3200,
     "activated": true,
     "referrals": 8
+  },
+  
+  {
+    "full_name": "Echecity",
+    "account_id": "08066823561",
+    "passcode": "ech3561",
+    "balance": 250,
+    "activated": false,
+    "referrals": 0
   }
+  
 ]
